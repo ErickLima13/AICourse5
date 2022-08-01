@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class MapLocation       
+public class MapLocation
 {
     public int x;
     public int z;
@@ -21,6 +20,25 @@ public class MapLocation
     public static MapLocation operator +(MapLocation a, MapLocation b)
        => new MapLocation(a.x + b.x, a.z + b.z);
 
+    public override bool Equals(object obj)
+    {
+        if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+        {
+            return false;
+        }
+        else
+        {
+            return x == ((MapLocation)obj).x && z == ((MapLocation)obj).z;
+        }
+
+
+    }
+
+    public override int GetHashCode()
+    {
+        return 0;
+    }
+
 }
 
 public class Maze : MonoBehaviour
@@ -34,6 +52,7 @@ public class Maze : MonoBehaviour
     public int depth = 30; //z length
     public byte[,] map;
     public int scale = 6;
+    public Material wallMaterial;
 
     // Start is called before the first frame update
     void Start()
@@ -45,11 +64,11 @@ public class Maze : MonoBehaviour
 
     void InitialiseMap()
     {
-        map = new byte[width,depth];
+        map = new byte[width, depth];
         for (int z = 0; z < depth; z++)
             for (int x = 0; x < width; x++)
             {
-                    map[x, z] = 1;     //1 = wall  0 = corridor
+                map[x, z] = 1;     //1 = wall  0 = corridor
             }
     }
 
@@ -58,8 +77,8 @@ public class Maze : MonoBehaviour
         for (int z = 0; z < depth; z++)
             for (int x = 0; x < width; x++)
             {
-               if(Random.Range(0,100) < 50)
-                 map[x, z] = 0;     //1 = wall  0 = corridor
+                if (Random.Range(0, 100) < 50)
+                    map[x, z] = 0;     //1 = wall  0 = corridor
             }
     }
 
@@ -72,6 +91,7 @@ public class Maze : MonoBehaviour
                 {
                     Vector3 pos = new Vector3(x * scale, 0, z * scale);
                     GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    wall.GetComponent<MeshRenderer>().material = wallMaterial;
                     wall.transform.localScale = new Vector3(scale, scale, scale);
                     wall.transform.position = pos;
                 }
@@ -102,6 +122,6 @@ public class Maze : MonoBehaviour
 
     public int CountAllNeighbours(int x, int z)
     {
-        return CountSquareNeighbours(x,z) + CountDiagonalNeighbours(x,z);
+        return CountSquareNeighbours(x, z) + CountDiagonalNeighbours(x, z);
     }
 }
